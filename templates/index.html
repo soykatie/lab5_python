@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Weather Manager</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+<div class="container">
+    <h1>City Weather Manager</h1>
+    {% if message %}
+    <div class="alert {{ 'alert-success' if type == 'success' else 'alert-error' }}">
+        {{ message }}
+    </div>
+    {% endif %}
+    <div class="card">
+        <form action="/cities/add" method="post" class="form-grid">
+            <input type="text" name="name" placeholder="City name" required>
+            <input type="number" step="0.01" name="latitude" placeholder="Latitude" required>
+            <input type="number" step="0.01" name="longitude" placeholder="Longitude" required>
+            <button type="submit" class="btn-primary">Add city</button>
+        </form>
+    </div>
+    <div class="card actions">
+        <form action="/cities/reset" method="post">
+            <button type="submit" class="btn-danger">Reset cities</button>
+        </form>
+        <form action="/cities/update" method="post">
+            <button type="submit" class="btn-secondary">Update weather</button>
+        </form>
+    </div>
+    <ul>
+        {% for city in cities %}
+        <li>
+            <div class="city-info">
+                <strong>{{ city.name }}</strong>
+                <div>🌡 {{ city.temperature if city.temperature else "No data" }} °C</div>
+                <div>🕒
+                    {% if city.updated_at %}
+                        {{ city.updated_at.strftime("%d.%m.%Y %H:%M") }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </div>
+            </div>
+            <div class="actions">
+                <form action="/cities/remove/{{ city.id }}" method="post"
+                      onsubmit="return confirm('Are you sure you want to delete «{{ city.name }}»?');">
+                    <button type="submit" class="btn-danger">Remove</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+</body>
+</html>
